@@ -64,7 +64,10 @@ class AjaxForm extends Form
 	public function processFormData($arrSubmitted)
 	{
 		if ($this->blnAjax)
-			die('true');
+		{
+			echo strlen($this->objElement->text) ? $this->objElement->text : 'true';
+			exit;
+		}
 			
 		return parent::processFormData($arrSubmitted);
 	}
