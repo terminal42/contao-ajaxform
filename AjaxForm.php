@@ -61,22 +61,20 @@ class AjaxForm extends Form
 	}
 	
 	
-	public function processFormData($arrSubmitted)
+	protected function compile()
+	{
+		parent::compile();
+		$this->Template->ajaxAction = 'ajax.php?action=' . (strlen($this->objElement->pid) ? 'cte' : 'fmd') . '&id=' . $this->objElement->id;
+	}
+	
+	
+	protected function jumpToOrReload($intId)
 	{
 		if ($this->blnAjax)
 		{
 			echo strlen($this->objElement->text) ? $this->objElement->text : 'true';
 			exit;
 		}
-			
-		return parent::processFormData($arrSubmitted);
-	}
-	
-	
-	protected function compile()
-	{
-		parent::compile();
-		$this->Template->ajaxAction = 'ajax.php?action=' . (strlen($this->objElement->pid) ? 'cte' : 'fmd') . '&id=' . $this->objElement->id;
 	}
 }
 
