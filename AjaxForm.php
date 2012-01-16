@@ -35,8 +35,29 @@ class AjaxForm extends Form
 	 */
 	protected $strTemplate = 'ajaxform';
 	
-	private $objElement;
-	private $blnAjax = false;
+	/**
+	 * Confirmation text
+	 * @var string
+	 */
+	protected $strConfirmation;
+
+	/**
+	 * Ajax ID
+	 * @var int
+	 */
+	protected $intId;
+	
+	/**
+	 * Ajax action
+	 * @var string
+	 */
+	protected $strAction;
+	
+	/**
+	 * Trigger ajax mode
+	 * @var bool
+	 */
+	protected $blnAjax = false;
 	
 	
 	/**
@@ -46,7 +67,9 @@ class AjaxForm extends Form
 	 */
 	public function __construct(Database_Result $objElement)
 	{
-		$this->objElement = $objElement;
+		$this->strConfirmation = $objElement->text;
+		$this->intId = $objElement->id;
+		$this->strAction = strpos($objElement->query, 'tl_content') === false ? 'fmd' : 'cte';
 		
 		parent::__construct($objElement);
 	}
@@ -63,8 +86,11 @@ class AjaxForm extends Form
 	
 	protected function compile()
 	{
+		global $objPage;
+		
 		parent::compile();
-		$this->Template->ajaxAction = 'ajax.php?action=' . (strlen($this->objElement->pid) ? 'cte' : 'fmd') . '&id=' . $this->objElement->id;
+		
+		$this->Template->ajaxAction = 'ajax.php?action=' . $this->strAction . '&id=' . $this->intId . '&page=' . $objPage->id . '&language=' . $GLOBALS['TL_LANGUAGE'];
 	}
 	
 	
@@ -72,7 +98,12 @@ class AjaxForm extends Form
 	{
 		if ($this->blnAjax)
 		{
-			echo strlen($this->objElement->text) ? $this->objElement->text : 'true';
+			echo json_encode(array
+			(
+				'token'		=> REQUEST_TOKEN,
+				'content'	=> strlen($this->strConfirmation) ? ('<div class="message ajaxconfirm">'.$this->strConfirmation.'</div>') : 'true',
+			));
+			
 			exit;
 		}
 	}

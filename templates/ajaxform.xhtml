@@ -10,6 +10,7 @@
 <div class="formbody">
 <?php if ($this->method != 'get'): ?>
 <input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formSubmit; ?>" />
+<input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}" />
 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo $this->maxFileSize; ?>" />
 <?php endif; ?>
 <?php echo $this->hidden; ?>
@@ -38,6 +39,9 @@ window.addEvent('domready', function() {
 					event.target.submit();
 					return;
 				}
+				
+				json = JSON.decode(txt);
+				txt = json.content;
 				
 				new Fx.Tween(event.target, {property: 'opacity', duration: 200}).start(1,0).chain(
 				    function(){ this.element.set('html', txt); this.start(0,1); }
