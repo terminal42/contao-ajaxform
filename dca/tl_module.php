@@ -29,5 +29,5 @@
 /**
  * Palettes
  */
-$GLOBALS['TL_DCA']['tl_module']['palettes']['ajaxform'] = '{title_legend},name,headline,type;{include_legend},form;{text_legend},text;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
+$GLOBALS['TL_DCA']['tl_module']['palettes']['ajaxform'] = '{title_legend},name,headline,type;{include_legend},form;{text_legend},richtext;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
 
