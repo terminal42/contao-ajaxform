@@ -96,15 +96,23 @@ class AjaxForm extends Form
 	
 	protected function jumpToOrReload($intId)
 	{
+		$this->Template = new FrontendTemplate('ajaxform_confirm');
+		$this->Template->message = $this->strConfirmation;
+
 		if ($this->blnAjax)
 		{
 			echo json_encode(array
 			(
 				'token'		=> REQUEST_TOKEN,
-				'content'	=> strlen($this->strConfirmation) ? ('<div class="message ajaxconfirm">'.$this->strConfirmation.'</div>') : 'true',
+				'content'	=> strlen($this->strConfirmation) ? $this->Template->parse() : 'true',
 			));
 			
 			exit;
+		}
+		
+		if ($this->strConfirmation)
+		{
+			return;
 		}
 	}
 }
