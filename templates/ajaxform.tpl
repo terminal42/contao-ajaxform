@@ -39,9 +39,17 @@ window.addEvent('domready', function() {
 					return;
 				}
 				
-				new Fx.Tween(event.target, {property: 'opacity', duration: 200}).start(1,0).chain(
-				    function(){ this.element.set('html', txt); this.start(0,1); }
-				);
+				new Fx.Tween(event.target, {property: 'opacity', duration: 200}).start(1,0).chain(function()
+			    {
+			    	this.element.set('html', txt);
+			    	this.start(0,1);
+			    	
+			    	try {
+			    		this.element.getElements('input,textarea').cleardefault();
+			    	} catch (err) {}
+			    	
+			    	this.callChain();
+			    });
 			}
 		});
 		event.target.send('<?php echo $this->ajaxAction; ?>');
