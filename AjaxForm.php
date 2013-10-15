@@ -94,7 +94,7 @@ class AjaxForm extends Form
 	}
 	
 	
-	protected function jumpToOrReload($intId)
+	protected function jumpToOrReload($intId, $strParams=null, $strForceLang=null)
 	{
 		$this->Template = new FrontendTemplate('ajaxform_confirm');
 		$this->Template->message = $this->strConfirmation;
