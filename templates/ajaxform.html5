@@ -52,6 +52,9 @@ window.addEvent('domready', function() {
 			    		this.element.getElements('input,textarea').cleardefault();
 			    	} catch (err) {}
 			    	
+			    	this.element.fireEvent('ajax_change');
+			    	window.fireEvent('ajax_change');
+			    	
 			    	this.callChain();
 			    });
 			}
