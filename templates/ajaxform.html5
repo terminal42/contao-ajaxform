@@ -22,8 +22,7 @@
 </div>
 </form>
 
-<script type="text/javascript">
-<!--//--><![CDATA[//><!--
+<script>
 <?php if ($this->hasError): ?>
 try {
   window.scrollTo(null, ($('<?php echo $this->formId; ?>').getElement('p.error').getPosition().y - 20));
@@ -63,7 +62,6 @@ window.addEvent('domready', function() {
 		return false;
 	});
 });
-//--><!]]>
 </script>
 
 </div>
