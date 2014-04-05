@@ -25,7 +25,7 @@
 <script type="text/javascript">
 <?php if ($this->hasError): ?>
 try {
-  window.scrollTo(null, ($('<?php echo $this->formId; ?>').getElement('p.error').getPosition().y - 20));
+  window.scrollTo(null, (document..getElement('#<?php echo $this->formId; ?> p.error').getPosition().y - 20));
 } catch(e) {}
 <?php endif; ?>
 window.addEvent('domready', function() {
@@ -37,10 +37,6 @@ window.addEvent('domready', function() {
 					event.target.submit();
 					return;
 				}
-				
-				json = JSON.decode(txt);
-				txt = json.content;
-				
 				new Fx.Tween(event.target, {property: 'opacity', duration: 200}).start(1,0).chain(function() {
 			    	this.element.set('html', txt);
 			    	this.start(0,1);
@@ -49,11 +45,14 @@ window.addEvent('domready', function() {
 			    		this.element.getElements('input,textarea').cleardefault();
 			    	} catch (err) {}
 
+			    	this.element.fireEvent('ajax_change');
+			    	window.fireEvent('ajax_change');
+
 			    	this.callChain();
 			    });
 			}
 		});
-		event.target.send('<?php echo $this->ajaxAction; ?>');
+		event.target.send('<?php echo \Environment::get('request'); ?>');
 		return false;
 	});
 });

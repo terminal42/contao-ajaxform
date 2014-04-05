@@ -9,8 +9,10 @@
  * @link       http://github.com/aschempp/contao-ajaxform
  */
 
+use Haste\Http\Response\HtmlResponse;
 
-class AjaxForm extends Form
+
+class AjaxForm extends \Form
 {
 
 	/**
@@ -19,82 +21,32 @@ class AjaxForm extends Form
 	 */
 	protected $strTemplate = 'ajaxform';
 
-	/**
-	 * Confirmation text
-	 * @var string
-	 */
-	protected $strConfirmation;
 
-	/**
-	 * Ajax ID
-	 * @var int
-	 */
-	protected $intId;
-
-	/**
-	 * Ajax action
-	 * @var string
-	 */
-	protected $strAction;
-
-	/**
-	 * Trigger ajax mode
-	 * @var bool
-	 */
-	protected $blnAjax = false;
-
-
-	/**
-	 * Initialize the object
-	 * @param object
-	 * @return string
-	 */
-	public function __construct(Database_Result $objElement)
+	public function generate()
 	{
-		$this->strConfirmation = $objElement->text;
-		$this->intId = $objElement->id;
-		$this->strAction = strpos($objElement->query, 'tl_content') === false ? 'fmd' : 'cte';
+		if (\Environment::get('isAjaxRequest')) {
+    		$this->strTemplate = 'ajaxform_inline';
 
-		parent::__construct($objElement);
-	}
-
-
-	public function generateAjax()
-	{
-		$this->blnAjax = true;
-		$this->strTemplate = 'ajaxform_inline';
+    		$objResponse = new HtmlResponse(parent::generate());
+			$objResponse->send();
+		}
 
 		return parent::generate();
 	}
 
 
-	protected function compile()
-	{
-		global $objPage;
-
-		parent::compile();
-
-		$this->Template->ajaxAction = 'ajax.php?action=' . $this->strAction . '&id=' . $this->intId . '&page=' . $objPage->id . '&language=' . $GLOBALS['TL_LANGUAGE'];
-	}
-
-
 	protected function jumpToOrReload($intId, $strParams=null, $strForceLang=null)
 	{
-		$this->Template = new FrontendTemplate('ajaxform_confirm');
-		$this->Template->message = $this->strConfirmation;
+		$this->Template = new \FrontendTemplate('ajaxform_confirm');
+		$this->Template->message = $this->objParent->text;
 
-		if ($this->blnAjax)
+		if (\Environment::get('isAjaxRequest'))
 		{
-			echo json_encode(array
-			(
-				'token'		=> REQUEST_TOKEN,
-				'content'	=> strlen($this->strConfirmation) ? $this->Template->parse() : 'true',
-			));
-
-			exit;
+		    $objResponse = new HtmlResponse($this->objParent->text ? $this->Template->parse() : 'true');
+			$objResponse->send();
 		}
 
-		if ($this->strConfirmation)
+		if ($this->objParent->text)
 		{
 			return;
 		}
