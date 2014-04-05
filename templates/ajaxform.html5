@@ -32,8 +32,7 @@ window.addEvent('domready', function() {
 	document.id('<?php echo $this->formId; ?>').addEvent('submit', function(event) {
 		event.target.set('send', {
 			onComplete: function(txt, xml) {
-				if (txt == 'true')
-				{
+				if (txt == 'true') {
 					event.target.removeEvent('submit');
 					event.target.submit();
 					return;
@@ -42,18 +41,17 @@ window.addEvent('domready', function() {
 				json = JSON.decode(txt);
 				txt = json.content;
 				
-				new Fx.Tween(event.target, {property: 'opacity', duration: 200}).start(1,0).chain(function()
-			    {
+				new Fx.Tween(event.target, {property: 'opacity', duration: 200}).start(1,0).chain(function() {
 			    	this.element.set('html', txt);
 			    	this.start(0,1);
-			    	
+
 			    	try {
 			    		this.element.getElements('input,textarea').cleardefault();
 			    	} catch (err) {}
-			    	
+
 			    	this.element.fireEvent('ajax_change');
 			    	window.fireEvent('ajax_change');
-			    	
+
 			    	this.callChain();
 			    });
 			}
