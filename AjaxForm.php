@@ -43,15 +43,18 @@ class AjaxForm extends \Form
 	{
     	parent::compile();
 
-    	// Check for javascript framework
-		global $objPage;
-		$this->Template->jquery = false;
-		$this->Template->mootools = false;
+        // Check for javascript framework
+        if (TL_MODE == 'FE') {
+    		global $objPage;
 
-        if ($objPage->getRelated('layout')->addJQuery) {
-            $this->Template->jquery = true;
-        } elseif ($objPage->getRelated('layout')->addMooTools) {
-            $this->Template->mootools = true;
+    		$this->Template->jquery = false;
+    		$this->Template->mootools = false;
+
+            if ($objPage->getRelated('layout')->addJQuery) {
+                $this->Template->jquery = true;
+            } elseif ($objPage->getRelated('layout')->addMooTools) {
+                $this->Template->mootools = true;
+            }
         }
 	}
 
