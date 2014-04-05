@@ -21,9 +21,13 @@ class AjaxForm extends \Form
 	 */
 	protected $strTemplate = 'ajaxform';
 
+	protected static $objStatic;
+
 
 	public function generate()
 	{
+	    static::$objStatic = $this;
+
 		if (\Environment::get('isAjaxRequest')) {
     		$this->strTemplate = 'ajaxform_inline';
 
@@ -54,17 +58,20 @@ class AjaxForm extends \Form
 
 	protected function jumpToOrReload($intId, $strParams=null, $strForceLang=null)
 	{
-		$this->Template = new \FrontendTemplate('ajaxform_confirm');
-		$this->Template->message = $this->objParent->text;
+	    $this->reload();
+	}
 
-		if (\Environment::get('isAjaxRequest'))
-		{
-		    $objResponse = new HtmlResponse($this->objParent->text ? $this->Template->parse() : 'true');
+	public static function reload()
+	{
+		static::$objStatic->Template = new \FrontendTemplate('ajaxform_confirm');
+		static::$objStatic->Template->message = static::$objStatic->objParent->text;
+
+		if (\Environment::get('isAjaxRequest')) {
+		    $objResponse = new HtmlResponse(static::$objStatic->objParent->text ? static::$objStatic->Template->parse() : 'true');
 			$objResponse->send();
 		}
 
-		if ($this->objParent->text)
-		{
+		if (static::$objStatic->objParent->text) {
 			return;
 		}
 	}
