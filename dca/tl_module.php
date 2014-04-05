@@ -14,3 +14,17 @@
  * Palettes
  */
 $GLOBALS['TL_DCA']['tl_module']['palettes']['ajaxform'] = '{title_legend},name,headline,type;{include_legend},form;{text_legend},text;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID,space';
+
+
+/**
+ * Fields
+ */
+$GLOBALS['TL_DCA']['tl_module']['fields']['text'] = array
+(
+    'label'         => &$GLOBALS['TL_LANG']['tl_module']['text'],
+    'exclude'       => true,
+    'inputType'     => 'textarea',
+    'eval'          => array('mandatory'=>true, 'rte'=>'tinyMCE', 'helpwizard'=>true),
+    'explanation'   => 'insertTags',
+    'sql'           => "mediumtext NULL"
+);
