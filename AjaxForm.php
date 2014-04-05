@@ -35,6 +35,23 @@ class AjaxForm extends \Form
 	}
 
 
+	protected function compile()
+	{
+    	parent::compile();
+
+    	// Check for javascript framework
+		global $objPage;
+		$this->Template->jquery = false;
+		$this->Template->mootools = false;
+
+        if ($objPage->getRelated('layout')->addJQuery) {
+            $this->Template->jquery = true;
+        } elseif ($objPage->getRelated('layout')->addMooTools) {
+            $this->Template->mootools = true;
+        }
+	}
+
+
 	protected function jumpToOrReload($intId, $strParams=null, $strForceLang=null)
 	{
 		$this->Template = new \FrontendTemplate('ajaxform_confirm');
