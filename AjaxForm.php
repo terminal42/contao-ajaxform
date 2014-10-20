@@ -28,7 +28,7 @@ class AjaxForm extends \Form
 	{
 	    static::$objStatic = $this;
 
-		if (\Environment::get('isAjaxRequest')) {
+		if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') != '') {
     		$this->strTemplate = 'ajaxform_inline';
 
     		$objResponse = new HtmlResponse(parent::generate());
@@ -45,6 +45,8 @@ class AjaxForm extends \Form
 
         // Check for javascript framework
         if (TL_MODE == 'FE') {
+
+            /** @type PageModel $objPage */
     		global $objPage;
 
     		$this->Template->jquery = false;
