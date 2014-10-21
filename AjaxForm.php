@@ -1,32 +1,18 @@
-<?php if (!defined('TL_ROOT')) die('You can not access this file directly!');
+<?php
 
 /**
- * TYPOlight webCMS
- * Copyright (C) 2005-2009 Leo Feyer
+ * ajaxform extension for Contao Open Source CMS
  *
- * This program is free software: you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation, either
- * version 2.1 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public
- * License along with this program. If not, please visit the Free
- * Software Foundation website at http://www.gnu.org/licenses/.
- *
- * PHP version 5
- * @copyright  Andreas Schempp 2009
- * @author     Andreas Schempp <andreas@schempp.ch>
- * @license    http://opensource.org/licenses/lgpl-3.0.html
- * @version    $Id$
+ * @copyright  Copyright (c) 2009-2014, terminal42 gmbh
+ * @author     terminal42 gmbh <info@terminal42.ch>
+ * @license    http://opensource.org/licenses/lgpl-3.0.html LGPL
+ * @link       http://github.com/aschempp/contao-ajaxform
  */
 
+use Haste\Http\Response\HtmlResponse;
 
-class AjaxForm extends Form
+
+class AjaxForm extends \Form
 {
 
 	/**
@@ -34,86 +20,64 @@ class AjaxForm extends Form
 	 * @var string
 	 */
 	protected $strTemplate = 'ajaxform';
-	
-	/**
-	 * Confirmation text
-	 * @var string
-	 */
-	protected $strConfirmation;
 
-	/**
-	 * Ajax ID
-	 * @var int
-	 */
-	protected $intId;
-	
-	/**
-	 * Ajax action
-	 * @var string
-	 */
-	protected $strAction;
-	
-	/**
-	 * Trigger ajax mode
-	 * @var bool
-	 */
-	protected $blnAjax = false;
-	
-	
-	/**
-	 * Initialize the object
-	 * @param object
-	 * @return string
-	 */
-	public function __construct(Database_Result $objElement)
+	protected static $objStatic;
+
+
+	public function generate()
 	{
-		$this->strConfirmation = $objElement->text;
-		$this->intId = $objElement->id;
-		$this->strAction = strpos($objElement->query, 'tl_content') === false ? 'fmd' : 'cte';
-		
-		parent::__construct($objElement);
-	}
-	
-	
-	public function generateAjax()
-	{
-		$this->blnAjax = true;
-		$this->strTemplate = 'ajaxform_inline';
-		
+	    static::$objStatic = $this;
+
+		if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') != '') {
+    		$this->strTemplate = 'ajaxform_inline';
+
+    		$objResponse = new HtmlResponse(parent::generate());
+			$objResponse->send();
+		}
+
 		return parent::generate();
 	}
-	
-	
+
+
 	protected function compile()
 	{
-		global $objPage;
-		
-		parent::compile();
-		
-		$this->Template->ajaxAction = 'ajax.php?action=' . $this->strAction . '&id=' . $this->intId . '&page=' . $objPage->id . '&language=' . $GLOBALS['TL_LANGUAGE'];
+    	parent::compile();
+
+        // Check for javascript framework
+        if (TL_MODE == 'FE') {
+
+            /** @type PageModel $objPage */
+    		global $objPage;
+
+    		$this->Template->jquery = false;
+    		$this->Template->mootools = false;
+
+            if ($objPage->getRelated('layout')->addJQuery) {
+                $this->Template->jquery = true;
+            } elseif ($objPage->getRelated('layout')->addMooTools) {
+                $this->Template->mootools = true;
+            }
+        }
 	}
-	
-	
+
+
 	protected function jumpToOrReload($intId, $strParams=null, $strForceLang=null)
 	{
-		$this->Template = new FrontendTemplate('ajaxform_confirm');
-		$this->Template->message = $this->strConfirmation;
+	    $this->reload();
+	}
 
-		if ($this->blnAjax)
-		{
-			echo json_encode(array
-			(
-				'token'		=> REQUEST_TOKEN,
-				'content'	=> strlen($this->strConfirmation) ? $this->Template->parse() : 'true',
-			));
-			
-			exit;
+	public static function reload()
+	{
+		static::$objStatic->Template = new \FrontendTemplate('ajaxform_confirm');
+		static::$objStatic->Template->message = static::$objStatic->objParent->text;
+
+		if (\Environment::get('isAjaxRequest')) {
+		    $objResponse = new HtmlResponse(static::$objStatic->objParent->text ? static::$objStatic->Template->parse() : 'true');
+			$objResponse->send();
 		}
-		
-		if ($this->strConfirmation)
-		{
+
+		if (static::$objStatic->objParent->text) {
 			return;
 		}
 	}
 }
-
