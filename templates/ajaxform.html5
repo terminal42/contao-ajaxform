@@ -24,11 +24,6 @@
 
 <?php if ($this->jquery): ?>
 <script>
-<?php if ($this->hasError): ?>
-try {
-//  window.scrollTo(null, (document..getElement('#<?php echo $this->formId; ?> p.error').getPosition().y - 20));
-} catch(e) {}
-<?php endif; ?>
 (function($) {
 "use strict";
     $(document).ready(function() {
