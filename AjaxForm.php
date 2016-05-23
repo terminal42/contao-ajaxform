@@ -27,8 +27,9 @@ class AjaxForm extends \Form
 	public function generate()
 	{
 	    static::$objStatic = $this;
+		$formId = ($this->formID != '') ? 'auto_'.$this->formID : 'auto_form_'.$this->id;
 
-		if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') != '') {
+		if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') == $formId) {
     		$this->strTemplate = 'ajaxform_inline';
 
     		$objResponse = new HtmlResponse(parent::generate());
