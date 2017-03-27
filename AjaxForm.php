@@ -36,6 +36,11 @@ class AjaxForm extends \Form
 			$objResponse->send();
 		}
 
+        // Replace the default Contao 4 template
+        if ($this->customTpl === 'form_wrapper') {
+            $this->customTpl = $this->strTemplate;
+        }
+
 		return parent::generate();
 	}
 
