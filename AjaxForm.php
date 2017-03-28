@@ -35,8 +35,7 @@ class AjaxForm extends \Form
         if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') === $formId) {
             $this->strTemplate = 'ajaxform_inline';
 
-            $objResponse = new HtmlResponse(parent::generate());
-            $objResponse->send();
+            static::sendResponse(parent::generate());
         }
 
         // Replace the default Contao 4 template
@@ -48,7 +47,7 @@ class AjaxForm extends \Form
     }
 
     /**
-     * Reload the form.
+     * Override the reload method.
      */
     public static function reload()
     {
@@ -56,8 +55,7 @@ class AjaxForm extends \Form
         static::$objStatic->Template->message = static::$objStatic->objParent->text;
 
         if (\Environment::get('isAjaxRequest')) {
-            $objResponse = new HtmlResponse(static::$objStatic->objParent->text ? static::$objStatic->Template->parse() : 'true');
-            $objResponse->send();
+            static::sendResponse(static::$objStatic->objParent->text ? static::$objStatic->Template->parse() : 'true');
         }
 
         if (static::$objStatic->objParent->text) {
@@ -98,5 +96,18 @@ class AjaxForm extends \Form
     protected function jumpToOrReload($intId, $strParams = null, $strForceLang = null)
     {
         $this->reload();
+    }
+
+    /**
+     * Replace insert tags and send response.
+     *
+     * @param string $content
+     */
+    private static function sendResponse($content)
+    {
+        $insertTags = new InsertTags();
+        $content = $insertTags->replace($content, false);
+        $objResponse = new HtmlResponse($content);
+        $objResponse->send();
     }
 }
