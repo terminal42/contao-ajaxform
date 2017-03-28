@@ -88,7 +88,7 @@ class AjaxForm extends \Form
 
     /**
      * Override the jumpToOrReload method to always reload.
-     * 
+     *
      * @param array|int $intId
      * @param null      $strParams
      * @param null      $strForceLang
