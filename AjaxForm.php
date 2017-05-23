@@ -34,6 +34,7 @@ class AjaxForm extends \Form
 
         if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') === $formId) {
             $this->strTemplate = 'ajaxform_inline';
+            $this->customTpl = 'ajaxform_inline';
 
             static::sendResponse(parent::generate());
         }
