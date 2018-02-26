@@ -32,6 +32,11 @@ class AjaxForm extends \Form
         static::$objStatic = $this;
         $formId = ($this->formID !== '') ? 'auto_' . $this->formID : 'auto_form_' . $this->id;
 
+        // This is always true for 4.4
+        if (version_compare(VERSION, '4.4', '>=')) {
+            $this->tableless = true;
+        }
+
         if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') === $formId) {
             $this->strTemplate = 'ajaxform_inline';
             $this->customTpl = 'ajaxform_inline';
