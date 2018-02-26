@@ -6,7 +6,7 @@
 <<?php echo $this->hl; ?>><?php echo $this->headline; ?></<?php echo $this->hl; ?>>
 <?php endif; ?>
 
-<form action="<?php echo $this->action; ?>" id="<?php echo $this->formId; ?>" method="<?php echo $this->method; ?>" enctype="<?php echo $this->enctype; ?>"<?php echo $this->attributes; ?><?php echo $this->novalidate; ?>>
+<form action="<?php echo $this->action; ?>"<?php if ($this->formId): ?> id="<?php echo $this->formId; ?>" <?php endif; ?>method="<?php echo $this->method; ?>" enctype="<?php echo $this->enctype; ?>"<?php echo $this->attributes; ?><?php echo $this->novalidate; ?>>
 <div class="formbody">
 <?php if ($this->method != 'get'): ?>
 <input type="hidden" name="FORM_SUBMIT" value="<?php echo $this->formSubmit; ?>">
@@ -27,7 +27,7 @@
 (function($) {
 "use strict";
     $(document).ready(function() {
-        var form = $('#<?php echo $this->formId; ?>');
+        var form = $(document.querySelector('input[name="FORM_SUBMIT"][value="<?php echo $this->formSubmit; ?>"]').form);
         form.submit(function() {
             $.ajax({
                 type: '<?php echo strtoupper($this->method); ?>',
@@ -69,7 +69,7 @@ try {
 } catch(e) {}
 <?php endif; ?>
 window.addEvent('domready', function() {
-    document.id('<?php echo $this->formId; ?>').addEvent('submit', function(event) {
+    document.querySelector('input[name="FORM_SUBMIT"][value="<?php echo $this->formSubmit; ?>"]').form.addEvent('submit', function(event) {
         event.target.set('send', {
             onComplete: function(txt, xml) {
                 if (txt == 'true') {
