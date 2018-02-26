@@ -90,6 +90,11 @@ class AjaxForm extends \Form
                 $this->Template->mootools = true;
             }
         }
+
+        // Use the complete URL if the action is not available
+        if (!$this->Template->action) {
+            $this->Template->action = \Environment::get('uri');
+        }
     }
 
     /**
