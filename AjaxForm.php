@@ -32,6 +32,11 @@ class AjaxForm extends \Form
         static::$objStatic = $this;
         $formId = ($this->formID !== '') ? 'auto_' . $this->formID : 'auto_form_' . $this->id;
 
+        // This is always true for 4.4
+        if (version_compare(VERSION, '4.4', '>=')) {
+            $this->tableless = true;
+        }
+
         if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') === $formId) {
             $this->strTemplate = 'ajaxform_inline';
             $this->customTpl = 'ajaxform_inline';
@@ -84,6 +89,11 @@ class AjaxForm extends \Form
             } elseif ($objPage->getRelated('layout')->addMooTools) {
                 $this->Template->mootools = true;
             }
+        }
+
+        // Use the complete URL if the action is not available
+        if (!$this->Template->action) {
+            $this->Template->action = \Environment::get('uri');
         }
     }
 
