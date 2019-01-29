@@ -116,7 +116,7 @@ class AjaxForm extends \Form
      */
     private static function sendResponse($content)
     {
-        $insertTags = new InsertTags();
+        $insertTags = new \Contao\InsertTags();
         $content = $insertTags->replace($content, false);
         $objResponse = new HtmlResponse($content);
         $objResponse->send();
