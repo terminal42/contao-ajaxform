@@ -22,82 +22,78 @@
 </div>
 </form>
 
-<?php if ($this->jquery): ?>
 <script>
-(function($) {
-"use strict";
-    $(document).ready(function() {
-        var form = $(document.querySelector('input[name="FORM_SUBMIT"][value="<?php echo $this->formSubmit; ?>"]').form);
-        form.submit(function() {
-            $.ajax({
-                type: '<?php echo strtoupper($this->method); ?>',
-                data: window.FormData ? new FormData(this) : form.serialize(),
-                cache: false,
-                contentType: false,
-                processData: false,
-                success: function(data) {
-                    if (data == 'true') {
-                        form.off('submit').submit();
-                        return;
-                    }
-                    form.animate({'opacity':0}, 200, 'swing', function() {
-                        form.html(data);
-                        form.animate({'opacity':1}, 200);
+(function() {
+    var triggeredButton = null;
+    var form = document.querySelector('input[name="FORM_SUBMIT"][value="<?= $this->formSubmit; ?>"]').form;
+    if (!form) {
+        return;
+    }
 
-                        try {
-                            form.find('input,textarea').each(function (el) {
-                                el.cleardefault();
-                            });
-                        } catch (err) {}
+    function request(method, uri, body, callback) {
+        var body = body || null;
+        var request = new XMLHttpRequest();
+        request.open(method, uri, true);
+        request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        request.setRequestHeader('Contao-Ajax-Form', '<?= $this->formSubmit; ?>');
 
-                        form.trigger('ajax_change');
-                        $(window).trigger('ajax_change');
-                    });
-                }
+        request.onload = function() {
+            callback.apply(this);
+
+            var event = new Event('ajax_change');
+            form.dispatchEvent(event);
+            window.dispatchEvent(event);
+        };
+        request.send(body)
+    }
+
+    function addButtonEvents(form) {
+        var buttons = form.querySelectorAll('input[type="submit"],button[type="submit"]');
+        for (var i=0;i<buttons.length;i++) {
+
+            buttons[i].addEventListener('click', function (e) {
+                triggeredButton = e.target;
             });
+        }
 
-            return false;
-        });
-    });
-})(jQuery);
-</script>
-<?php elseif ($this->mootools): ?>
-<script>
-<?php if ($this->hasError): ?>
-try {
-  window.scrollTo(null, (document.getElement('#<?php echo $this->formId; ?> p.error').getPosition().y - 20));
-} catch(e) {}
-<?php endif; ?>
-window.addEvent('domready', function() {
-    document.querySelector('input[name="FORM_SUBMIT"][value="<?php echo $this->formSubmit; ?>"]').form.addEvent('submit', function(event) {
-        event.target.set('send', {
-            onComplete: function(txt, xml) {
-                if (txt == 'true') {
-                    event.target.removeEvent('submit');
-                    event.target.submit();
-                    return;
-                }
-                new Fx.Tween(event.target, {property: 'opacity', duration: 200}).start(1,0).chain(function() {
-                    this.element.set('html', txt);
-                    this.start(0,1);
+    }
 
-                    try {
-                        this.element.getElements('input,textarea').cleardefault();
-                    } catch (err) {}
+    function updateContent(form, data, action) {
+        var action = action || window.location.href;
 
-                    this.element.fireEvent('ajax_change');
-                    window.fireEvent('ajax_change');
+        if (data == 'true') {
+            return;
+        }
 
-                    this.callChain();
-                });
+        form.action = action;
+        form.innerHTML = data;
+        addButtonEvents(form);
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(form);
+
+        if (triggeredButton) {
+            formData.append(triggeredButton.name, triggeredButton.value);
+        }
+
+        request('POST', form.action, formData, function () {
+            var location = this.getResponseHeader('X-Ajax-Location');
+            if (!location) {
+                updateContent(form, this.responseText);
+                return;
             }
+
+            request('GET', location, null, function() {
+                updateContent(form, this.responseText, location);
+            });
         });
-        event.target.send('<?php echo \Environment::get('request'); ?>');
-        return false;
     });
-});
+
+    addButtonEvents(form);
+})(); 
 </script>
-<?php endif; ?>
 
 </div>
 <!-- indexer::continue -->

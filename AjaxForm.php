@@ -37,7 +37,7 @@ class AjaxForm extends \Form
             $this->tableless = true;
         }
 
-        if (\Environment::get('isAjaxRequest') && \Input::post('FORM_SUBMIT') === $formId) {
+        if (\Environment::get('isAjaxRequest') && \Environment::get('httpContaoAjaxForm') === $formId) {
             $this->strTemplate = 'ajaxform_inline';
             $this->customTpl = 'ajaxform_inline';
 
@@ -75,21 +75,6 @@ class AjaxForm extends \Form
     protected function compile()
     {
         parent::compile();
-
-        // Check for javascript framework
-        if (TL_MODE === 'FE') {
-            /* @type PageModel $objPage */
-            global $objPage;
-
-            $this->Template->jquery = false;
-            $this->Template->mootools = false;
-
-            if ($objPage->getRelated('layout')->addJQuery) {
-                $this->Template->jquery = true;
-            } elseif ($objPage->getRelated('layout')->addMooTools) {
-                $this->Template->mootools = true;
-            }
-        }
 
         // Use the complete URL if the action is not available
         if (!$this->Template->action) {
