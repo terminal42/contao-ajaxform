@@ -24,11 +24,12 @@
 
 <script>
 (function() {
-    var triggeredButton = null;
     var form = document.querySelector('input[name="FORM_SUBMIT"][value="<?= $this->formSubmit; ?>"]').form;
     if (!form) {
         return;
     }
+
+    var triggeredButton = null;
 
     function request(method, uri, body, callback) {
         var body = body || null;
@@ -52,7 +53,7 @@
         for (var i=0;i<buttons.length;i++) {
 
             buttons[i].addEventListener('click', function (e) {
-                triggeredButton = e.target;
+                triggeredButton = e.currentTarget;
             });
         }
 
@@ -61,7 +62,7 @@
     function updateContent(form, data, action) {
         var action = action || window.location.href;
 
-        if (data == 'true') {
+        if ('true' === data) {
             return;
         }
 
