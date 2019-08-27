@@ -38,7 +38,11 @@
         request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         request.setRequestHeader('Contao-Ajax-Form', '<?= $this->formSubmit; ?>');
 
+        form.classList.add('ajax-loading');
+
         request.onload = function() {
+            form.classList.remove('ajax-loading');
+
             callback.apply(this);
 
             var event = new Event('ajax_change');
