@@ -64,7 +64,7 @@
     }
 
     function updateContent(form, data, action) {
-        var action = action || window.location.href;
+        var action = action || form.action;
 
         if ('true' === data) {
             return;
