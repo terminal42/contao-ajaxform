@@ -36,6 +36,9 @@ class AjaxForm extends \Form
         if (version_compare(VERSION, '4.4', '>=')) {
             $this->tableless = true;
         }
+        
+        // Pass parent content or module model to the ajax form templates
+        $this->parentModel = $this->objParent;
 
         if (\Environment::get('isAjaxRequest') && \Environment::get('httpContaoAjaxForm') === $formId) {
             $this->strTemplate = 'ajaxform_inline';
@@ -58,6 +61,7 @@ class AjaxForm extends \Form
     public static function reload()
     {
         static::$objStatic->Template = new \FrontendTemplate('ajaxform_confirm');
+        static::$objStatic->Template->parentModel = static::$objStatic->objParent;
         static::$objStatic->Template->message = static::$objStatic->objParent->text;
 
         if (\Environment::get('isAjaxRequest')) {
