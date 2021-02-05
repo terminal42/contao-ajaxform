@@ -48,6 +48,9 @@ class AjaxForm extends \Form
         if ($this->customTpl === 'form_wrapper') {
             $this->customTpl = $this->strTemplate;
         }
+        
+        // Pass parent content or module model to the ajax form templates
+        $this->arrData['objParent'] = $this->objParent;
 
         return parent::generate();
     }
