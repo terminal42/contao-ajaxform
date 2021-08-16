@@ -35,6 +35,7 @@
         var body = body || null;
         var request = new XMLHttpRequest();
         request.open(method, uri, true);
+        request.setRequestHeader('Accept', 'text/html');
         request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
         request.setRequestHeader('Contao-Ajax-Form', '<?= $this->formSubmit; ?>');
 
@@ -97,7 +98,7 @@
     });
 
     addButtonEvents(form);
-})(); 
+})();
 </script>
 
 </div>
