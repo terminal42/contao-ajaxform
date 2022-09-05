@@ -9,7 +9,7 @@
  * @link       http://github.com/terminal42/contao-ajaxform
  */
 
-\System::loadLanguageFile('tl_content');
+\Contao\System::loadLanguageFile('tl_content');
 
 /*
  * Fields
