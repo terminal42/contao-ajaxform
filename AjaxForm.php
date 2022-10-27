@@ -9,9 +9,13 @@
  * @link       http://github.com/terminal42/contao-ajaxform
  */
 
-use Haste\Http\Response\HtmlResponse;
+use Contao\CoreBundle\Exception\ResponseException;
+use Contao\Environment;
+use Contao\Form;
+use Contao\FrontendTemplate;
+use Symfony\Component\HttpFoundation\Response;
 
-class AjaxForm extends \Form
+class AjaxForm extends Form
 {
     /**
      * Template.
@@ -32,15 +36,10 @@ class AjaxForm extends \Form
         static::$objStatic = $this;
         $formId = ($this->formID !== '') ? 'auto_' . $this->formID : 'auto_form_' . $this->id;
 
-        // This is always true for 4.4
-        if (version_compare(VERSION, '4.4', '>=')) {
-            $this->tableless = true;
-        }
-        
         // Pass parent content or module model to the ajax form templates
         $this->parentModel = $this->objParent;
 
-        if (\Environment::get('isAjaxRequest') && \Environment::get('httpContaoAjaxForm') === $formId) {
+        if (Environment::get('isAjaxRequest') && Environment::get('httpContaoAjaxForm') === $formId) {
             $this->strTemplate = 'ajaxform_inline';
             $this->customTpl = 'ajaxform_inline';
 
@@ -60,11 +59,11 @@ class AjaxForm extends \Form
      */
     public static function reload()
     {
-        static::$objStatic->Template = new \FrontendTemplate('ajaxform_confirm');
+        static::$objStatic->Template = new FrontendTemplate('ajaxform_confirm');
         static::$objStatic->Template->parentModel = static::$objStatic->objParent;
         static::$objStatic->Template->message = static::$objStatic->objParent->text;
 
-        if (\Environment::get('isAjaxRequest')) {
+        if (Environment::get('isAjaxRequest')) {
             static::sendResponse(static::$objStatic->objParent->text ? static::$objStatic->Template->parse() : 'true');
         }
 
@@ -82,7 +81,7 @@ class AjaxForm extends \Form
 
         // Use the complete URL if the action is not available
         if (!$this->Template->action) {
-            $this->Template->action = \Environment::get('uri');
+            $this->Template->action = Environment::get('uri');
         }
     }
 
@@ -105,9 +104,8 @@ class AjaxForm extends \Form
      */
     private static function sendResponse($content)
     {
-        $insertTags = new \Contao\InsertTags();
-        $content = $insertTags->replace($content, false);
-        $objResponse = new HtmlResponse($content);
-        $objResponse->send();
+        $content = \Contao\System::getContainer()->get('contao.insert_tag.parser')->replaceInline($content);
+
+        throw new ResponseException(new Response($content));
     }
 }
