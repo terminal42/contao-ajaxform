@@ -13,6 +13,8 @@ use Contao\CoreBundle\Exception\ResponseException;
 use Contao\Environment;
 use Contao\Form;
 use Contao\FrontendTemplate;
+use Contao\InsertTags;
+use Contao\System;
 use Symfony\Component\HttpFoundation\Response;
 
 class AjaxForm extends Form
@@ -104,7 +106,8 @@ class AjaxForm extends Form
      */
     private static function sendResponse($content)
     {
-        $content = \Contao\System::getContainer()->get('contao.insert_tag.parser')->replaceInline($content);
+        $container = System::getContainer();
+        $content = $container->has('contao.insert_tag_parser') ? $container->get('contao.insert_tag_parser')->replaceInline($content) : (new InsertTags())->replace($content);
 
         throw new ResponseException(new Response($content));
     }
