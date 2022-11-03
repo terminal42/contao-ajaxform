@@ -104,7 +104,11 @@ class AjaxForm extends Form
      */
     private static function sendResponse($content)
     {
-        $content = \Contao\System::getContainer()->get('contao.insert_tag.parser')->replaceInline($content);
+        if (\Contao\System::getContainer()->has('contao.insert_tag.parser')) {
+            $content = \Contao\System::getContainer()->get('contao.insert_tag.parser')->replaceInline($content);
+        } else {
+            $content = \Contao\Controller::replaceInsertTags($content);
+        }
 
         throw new ResponseException(new Response($content));
     }
