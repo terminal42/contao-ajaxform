@@ -72,7 +72,8 @@
         }
 
         form.action = action;
-        form.innerHTML = data;
+        form.innerHTML = '';
+        form.append(document.createRange().createContextualFragment(data));
         addButtonEvents(form);
     }
 
