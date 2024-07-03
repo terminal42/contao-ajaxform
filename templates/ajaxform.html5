@@ -83,6 +83,7 @@
 
         request('POST', form.action, formData, function () {
             var location = this.getResponseHeader('X-Ajax-Location');
+            form.action = this.responseURL;
             if (!location) {
                 updateContent(form, this.responseText);
                 return;
