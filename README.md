@@ -15,7 +15,7 @@ This extension does not require jQuery or MooTools and thus only works in modern
 
 A manual migration is very easy:
 
-First, search for all the content elements of type `ajaxform`. If you want to do it on database level, you can do it by running `SELECT * FROM tl_content WHERE type='ajaxform'`. Then, do the following steps for every single one of them:
+First, search for all the content elements of type `ajaxform`. If you want to do it on database level, you can do it by running `SELECT * FROM tl_module WHERE type='ajaxform'`. Then, do the following steps for every single one of them:
 
 1. Copy the confirmation `text` to your clipboard.
 2. Go to the respective form, enable the new Ajax confirmation message feature and paste your confirmation text.
@@ -25,6 +25,8 @@ First, search for all the content elements of type `ajaxform`. If you want to do
 You can also automate it by using the Contao Migration framework in your app. The migration needed looks like this:
 
 ```php
+<?php
+//src/Migration/AjaxFormMigration.php
 namespace App\Migration;
 
 use Contao\CoreBundle\Migration\AbstractMigration;
@@ -41,7 +43,7 @@ class AjaxFormMigration extends AbstractMigration
     {
         $schemaManager = $this->connection->createSchemaManager();
 
-        if (!$schemaManager->tablesExist(['tl_content', 'tl_form'])) {
+        if (!$schemaManager->tablesExist(['tl_module', 'tl_form'])) {
             return false;
         }
 
@@ -51,17 +53,17 @@ class AjaxFormMigration extends AbstractMigration
             return false;
         }
 
-        $total = $this->connection->fetchOne('SELECT COUNT(*) FROM tl_content WHERE type=?', ['ajaxform']);
+        $total = $this->connection->fetchOne('SELECT COUNT(*) FROM tl_module WHERE type=?', ['ajaxform']);
 
         return $total > 0;
     }
 
     public function run(): MigrationResult
     {
-        $records = $this->connection->fetchAllAssociative('SELECT id, form, text FROM tl_content WHERE type=?', ['ajaxform']);
+        $records = $this->connection->fetchAllAssociative('SELECT id, form, text FROM tl_module WHERE type=?', ['ajaxform']);
 
         foreach ($records as $record) {
-            $this->connection->update('tl_content', ['type' => 'form'], ['id' => $record['id']]);
+            $this->connection->update('tl_module', ['type' => 'form'], ['id' => $record['id']]);
             $this->connection->update('tl_form', ['confirmation' => $record['text'], 'ajax' => 1], ['id' => $record['form']]);
         }
 
@@ -69,3 +71,6 @@ class AjaxFormMigration extends AbstractMigration
     }
 }
 ```
+Then hit `composer install -o` and `vendor/bin/console contao:migrate --no-interaction`
+
+
